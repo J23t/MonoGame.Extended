@@ -1,7 +1,6 @@
-﻿
-
-namespace MonoGame.Extended.Collisions
+﻿namespace MonoGame.Extended.Collisions
 {
+
     /// <summary>
     /// Represents a single cell in a collision grid.
     /// </summary>
@@ -41,6 +40,16 @@ namespace MonoGame.Extended.Collisions
         /// <summary>
         /// Gets the bounding box of the cell.
         /// </summary>
-        public RectangleF BoundingBox => _parentGrid.GetCellRectangle(Column, Row).ToRectangleF();
+        public RectangleF BoundingBox
+        {
+            get
+            {
+                if (CollisionWorldExtensions.UsingTiled)
+                    return _parentGrid.GetCellBounds(Column, Row).ToRectangleF();
+                else
+                    return _parentGrid.GetCellRectangle(Column, Row).ToRectangleF();
+            }
+        }
+
     }
 }

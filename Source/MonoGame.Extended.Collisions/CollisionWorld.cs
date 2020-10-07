@@ -1,6 +1,7 @@
+using Microsoft.Xna.Framework;
+using MonoGame.Extended.Tiled;
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 
 namespace MonoGame.Extended.Collisions
 {
@@ -23,25 +24,34 @@ namespace MonoGame.Extended.Collisions
 
         public void Update(GameTime gameTime)
         {
-            var deltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             foreach (var actor in _actors)
             {
-                actor.Velocity += _gravity*deltaTime;
-                actor.Position += actor.Velocity*deltaTime;
+                //actor.Velocity += _gravity * deltaTime;
+                //actor.Position += actor.Velocity * deltaTime;
 
                 if (_grid != null)
-                    foreach (var collidable in _grid.GetCollidables(actor.BoundingBox))
+                    foreach (ICollidable collidable in _grid.GetCollidables(actor.BoundingBox))
                     {
-                        var intersection = RectangleF.Intersection(collidable.BoundingBox, actor.BoundingBox);
+                        RectangleF intersection = RectangleF.Intersection(collidable.BoundingBox, actor.BoundingBox);
 
                         if (intersection.IsEmpty)
                             continue;
 
-                        var info = GetCollisionInfo(actor, collidable, intersection);
+                        CollisionInfo info = GetCollisionInfo(actor, collidable, intersection);
                         actor.OnCollision(info);
                     }
             }
+        }
+
+        internal CollisionGrid CreateGrid(int[] data, TiledMap map)
+        {
+            if (_grid != null)
+                throw new InvalidOperationException("Only one collision grid can be created per world");
+
+            _grid = new CollisionGrid(data, map.Width, map.Height, map.TileWidth, map.TileHeight);
+            return _grid;
         }
 
         public CollisionActor CreateActor(IActorTarget target)
@@ -49,6 +59,12 @@ namespace MonoGame.Extended.Collisions
             var actor = new CollisionActor(target);
             _actors.Add(actor);
             return actor;
+        }
+
+        public void RemoveActor(IActorTarget target)
+        {
+            var actor = new CollisionActor(target);
+            _actors.Remove(actor);
         }
 
         public CollisionGrid CreateGrid(int[] data, int columns, int rows, int cellWidth, int cellHeight)
