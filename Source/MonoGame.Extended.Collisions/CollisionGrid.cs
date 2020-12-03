@@ -99,10 +99,5 @@ namespace MonoGame.Extended.Collisions
         {
             return new Rectangle(column * CellWidth, row * CellHeight, CellWidth, CellHeight);
         }
-
-        internal Rectangle GetCellRectangle(TiledMapObject firstobject)
-        {
-            return new Rectangle((int)firstobject.Position.X, (int)firstobject.Position.Y, (int)firstobject.Size.Width, (int)firstobject.Size.Height);
-        }
     }
 }

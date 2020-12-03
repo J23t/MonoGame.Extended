@@ -9,24 +9,28 @@ namespace MonoGame.Extended.Collisions
 
         public static bool UsingTiled { get; private set; }
 
-        public static Rectangle GetCellBounds(this CollisionGrid grid, int column, int row)
+        public static Rectangle GetCellRectangleFromObject(this CollisionGrid grid, int column, int row)
         {
             var gid = grid.GetCellAtIndex(column, row).Data;
 
             TiledMapTileset Tileset = _map.GetTilesetByTileGlobalIdentifier(gid);
-
             TiledMapObject[] objectarray = GetBounds(Tileset, gid);
-            if (objectarray.Length.Equals(0))
-            {
-                return grid.GetCellRectangle(0,0);
-            }
-            else
+
+            if (objectarray.Length is 1)
             {
                 TiledMapObject firstobject = objectarray[0];
 
-                return grid.GetCellRectangle(firstobject);
-            }
+                //TODO: object type
 
+                var PositionInCell = firstobject.Position;
+                var PositionOnMap = new Vector2(grid.CellWidth * column, grid.CellHeight * row) + PositionInCell;
+                var SizeOfRect = new Point((int)firstobject.Size.Height, (int)firstobject.Size.Width);
+                return new Rectangle(PositionOnMap.ToPoint(), SizeOfRect);
+            }
+            else
+            {
+                return new Rectangle();
+            }
         }
 
         public static CollisionGrid CreateGrid(this CollisionWorld world, TiledMap map)
@@ -54,11 +58,28 @@ namespace MonoGame.Extended.Collisions
 
                             if (objectarray != null)
                             {
-                                data[index] = tile.GlobalIdentifier;
-                            }
-                            else
-                            {
-                                data[index] = 0;
+                                if (objectarray.Length is 1)
+                                {
+                                    TiledMapObject firstobject = objectarray[0];
+
+                                    //TODO: object type
+
+                                    if (firstobject.Size != null)
+                                    {
+                                        if (firstobject.Size == new Point(tileLayer.TileWidth, tileLayer.TileHeight))
+                                        {
+                                            data[index] = 1; //Solid
+                                        }
+                                        else
+                                        {
+                                            data[index] = tile.GlobalIdentifier; //Interesting
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    data[index] = 0; //Empty
+                                }
                             }
                         }
 
@@ -75,7 +96,7 @@ namespace MonoGame.Extended.Collisions
         private static TiledMapObject[] GetBounds(TiledMapTileset set, int id)
         {
             var fgid = _map.GetTilesetFirstGlobalIdentifier(set);
-            var localid = fgid + id;
+            var localid = id - fgid;
             var results = set.Tiles.Find(cell => cell.LocalTileIdentifier.Equals(localid));
 
             if (results is null)

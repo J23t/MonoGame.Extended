@@ -21,7 +21,7 @@
             Column = column;
             Row = row;
             Data = data;
-            Flag = data == 0 ? CollisionGridCellFlag.Empty : CollisionGridCellFlag.Solid;
+            Flag = data == 0 ? CollisionGridCellFlag.Empty : (data == 1 ? CollisionGridCellFlag.Solid : CollisionGridCellFlag.Interesting);
         }
 
         /// <summary>
@@ -44,8 +44,8 @@
         {
             get
             {
-                if (CollisionWorldExtensions.UsingTiled)
-                    return _parentGrid.GetCellBounds(Column, Row).ToRectangleF();
+                if (CollisionWorldExtensions.UsingTiled && Flag is CollisionGridCellFlag.Interesting)
+                    return _parentGrid.GetCellRectangleFromObject(Column, Row).ToRectangleF();
                 else
                     return _parentGrid.GetCellRectangle(Column, Row).ToRectangleF();
             }

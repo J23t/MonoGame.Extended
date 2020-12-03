@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -17,10 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MonoGame.Extended\MonoGame.Extended.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
     <PackageReference Include="MonoGame.Extended.Tiled" Version="3.8.0" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641">
       <PrivateAssets>All</PrivateAssets>

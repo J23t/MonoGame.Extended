@@ -28,8 +28,8 @@ namespace MonoGame.Extended.Collisions
 
             foreach (var actor in _actors)
             {
-                //actor.Velocity += _gravity * deltaTime;
-                //actor.Position += actor.Velocity * deltaTime;
+                actor.Velocity += _gravity * deltaTime;
+                actor.Position += actor.Velocity * deltaTime;
 
                 if (_grid != null)
                     foreach (ICollidable collidable in _grid.GetCollidables(actor.BoundingBox))
@@ -43,15 +43,6 @@ namespace MonoGame.Extended.Collisions
                         actor.OnCollision(info);
                     }
             }
-        }
-
-        internal CollisionGrid CreateGrid(int[] data, TiledMap map)
-        {
-            if (_grid != null)
-                throw new InvalidOperationException("Only one collision grid can be created per world");
-
-            _grid = new CollisionGrid(data, map.Width, map.Height, map.TileWidth, map.TileHeight);
-            return _grid;
         }
 
         public CollisionActor CreateActor(IActorTarget target)
@@ -73,6 +64,15 @@ namespace MonoGame.Extended.Collisions
                 throw new InvalidOperationException("Only one collision grid can be created per world");
 
             _grid = new CollisionGrid(data, columns, rows, cellWidth, cellHeight);
+            return _grid;
+        }
+
+        internal CollisionGrid CreateGrid(int[] data, TiledMap map)
+        {
+            if (_grid != null)
+                throw new InvalidOperationException("Only one collision grid can be created per world");
+
+            _grid = new CollisionGrid(data, map.Width, map.Height, map.TileWidth, map.TileHeight);
             return _grid;
         }
 
